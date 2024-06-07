@@ -91,7 +91,7 @@ app.post(
 );
 
 //Activate user account
-app.get("/activate/:activation_token", activateUser);
+app.get("/activate", activateUser);
 
 // //////////////////
 //Authenticated Routes

@@ -12,6 +12,7 @@ const generateRandomDigit = require("../utils/generateRandomDigit");
 //*** local modules */
 const ResponseMessage = require("../utils/responseMessage"),
   userModel = require("../models/user.model");
+const { send } = require("process");
 
 // get the logo image
 // const logoBuffer = fs.readFileSync(`${__dirname}/../assets/sequioa-logo.png`);
@@ -77,7 +78,7 @@ auth.signUp = async (req, res) => {
     });
 
     // Create an activation link
-    const activationLink = `https://sequioa-one.vercel.app/activate?email=${email}&token=${activationToken}`;
+    const activationLink = `https://sequioa-api.vercel.app/activate?email=${email}&token=${activationToken}`;
 
     // Send the Activation link to the email
     const transporter = nodemailer.createTransport({
@@ -97,15 +98,15 @@ auth.signUp = async (req, res) => {
       <div style="display:inline-block">
        <img src="data:image/png;base64,${logoBase64}" alt="logo"/>
       </div>
-      <h5>Dear Sequioa Trader,</h5>
+      <h3 style="font-size:1rem;font-weight:800">Dear Sequioa Trader,</h3>
       <p style="font-size:1.2rem;line-height:1.5">
-       Your account <a href="#">${email}</a> has been successfully created! <br>
+       Your account <a href="#" style="color:#00f">${email}</a> has been successfully created at<br>
       <a style="text-decoration:none;font-size:1.4rem;font-weight:600;color:#ef5533" href="https://sequioa-one.vercel.app/">SEQUIOA</a>
       <br>
        To activate, Please click on the link below
       </p>
       <button 
-      style="border:none;box-shadow:none;font-size:1.1rem;display:block;width:100%;border-radius:8px;background:#ef5533;cursor:pointer;padding:0">
+      style="border:none;box-shadow:none;font-size:1.1rem;display:block;width:70%;border-radius:8px;background:#ef5533;cursor:pointer;padding:0;margin-bottom:1rem">
       <a style="text-decoration:none;color:#fff;border:1px solid red;display:block;padding:0.75rem;border-radius:inherit;" href="${activationLink}">Verify your account</a>
       </button>
       <small>If the above link cannot be clicked, please copy it to your browser address bar to enter the access, the link is valid within 24 hours</small>
@@ -138,42 +139,23 @@ auth.signUp = async (req, res) => {
 
 // Activate user account
 auth.activateUser = async (req, res) => {
-  const {
-    pathname,
-    query: { email, token },
-  } = url.parse(req.url, true);
-  console.log(token);
-  try {
-    const user = await userModel.findOne({
-      activationToken: token,
-    });
-    if (!user) {
-      console.log("user exist");
-      return res
-        .status(404)
-        .json(new ResponseMessage("error", 404, "invalid activation token"));
-    }
-    // Activate the user and save to the DB
-    user.isActive = true;
-    user.activationToken = null; //reset the activation token to null
-    await user.save();
-    console.log("saved");
+  // const {
+  //   pathname,
+  //   query: { email, token },
+  // } = url.parse(req.url, true);
+  // console.log(token);
+  const { email, token } = req.query;
 
-    // get the redirect link
-    // const redirectLink = `https://www.damsgallery.com/activated-account`;
+  // send email for account comfirmation
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_FROM,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+  });
 
-    // Generate Access token
-    const accessToken = await newToken(user);
-
-    // send email for account comfirmation
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_FROM,
-        pass: process.env.EMAIL_PASSWORD,
-      },
-    });
-
+  const sendActivationEmail = (email) => {
     const mailOptions = {
       from: process.env.EMAIL_FROM,
       to: user.email,
@@ -189,28 +171,41 @@ auth.activateUser = async (req, res) => {
       </body>
       `,
     };
-    transporter.sendMail(mailOptions, (error, success) => {
-      if (error) {
-        console.log(`Error sending comfirmation Email`, error);
-      }
 
-      // return res
-      //   .status(200)
-      //   .json(new ResponseMessage("success", 200, "Confirmation email sent"));
-      return res.status(200).json(
-        new ResponseMessage("success", 200, "user activated successfully", {
-          accessToken,
-        }),
-      );
+    return transporter.sendMail(mailOptions);
+  };
+
+  try {
+    const user = await userModel.findOne({
+      activationToken: token,
     });
+    if (!user) {
+      console.log("user does not exist");
+      return res
+        .status(404)
+        .json(new ResponseMessage("error", 404, "invalid activation token"));
+    }
+    // Activate the user and save to the DB
+    user.isActive = true;
+    // user.activationToken = null; //reset the activation token to null
+    await user.save();
+    console.log("saved");
 
-    // return res.redirect(redirectLink);
+    // send activation email
+    await sendActivationEmail(email);
+
+    // Generate Access token
+    // const accessToken = await newToken(user);
 
     // return res.status(200).json(
     //   new ResponseMessage("success", 200, "user activated successfully", {
     //     accessToken,
     //   }),
     // );
+
+    res.redirect(
+      `https://sequioa-one.vercel.app/activate?email=${email}&token=${activationToken}`,
+    );
   } catch (err) {
     return res
       .status(500)
