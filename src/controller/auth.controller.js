@@ -202,15 +202,15 @@ auth.activateUser = async (req, res) => {
     //     accessToken,
     //   }),
     // );
-
-    return res.redirect(
-      `https://sequioa-one.vercel.app/activate?email=${email}&token=${activationToken}`,
-    );
   } catch (err) {
     return res
       .status(500)
       .json(new ResponseMessage("error", 500, "Internal Server Error"));
   }
+
+  return res.redirect(
+    `https://sequioa-one.vercel.app/activate?email=${email}&token=${activationToken}`,
+  );
 };
 
 // Login a user
