@@ -78,7 +78,7 @@ auth.signUp = async (req, res) => {
     });
 
     // Create an activation link
-    const activationLink = `https://sequioa-api.vercel.app/activate?email="${email}"&token="${activationToken}"`;
+    const activationLink = `https://sequioa-api.vercel.app/activate?email=${email}&token=${activationToken}`;
 
     // Send the Activation link to the email
     const transporter = nodemailer.createTransport({
