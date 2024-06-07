@@ -78,7 +78,7 @@ auth.signUp = async (req, res) => {
     });
 
     // Create an activation link
-    const activationLink = `https://sequioa-api.vercel.app/activate?email=${email}&token=${activationToken}`;
+    const activationLink = `https://sequioa-api.vercel.app/activate?email="${email}"&token="${activationToken}"`;
 
     // Send the Activation link to the email
     const transporter = nodemailer.createTransport({
@@ -155,7 +155,7 @@ auth.activateUser = async (req, res) => {
     },
   });
 
-  const sendActivationEmail = (email) => {
+  const sendActivationEmail = async (email) => {
     const mailOptions = {
       from: process.env.EMAIL_FROM,
       to: user.email,
@@ -203,7 +203,7 @@ auth.activateUser = async (req, res) => {
     //   }),
     // );
 
-    res.redirect(
+    return res.redirect(
       `https://sequioa-one.vercel.app/activate?email=${email}&token=${activationToken}`,
     );
   } catch (err) {
