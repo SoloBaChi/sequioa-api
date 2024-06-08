@@ -1,4 +1,3 @@
-const fs = require("fs");
 const url = require("url");
 const validationResult = require("express-validator").validationResult,
   bcrypt = require("bcryptjs"),
@@ -13,19 +12,13 @@ const generateRandomDigit = require("../utils/generateRandomDigit");
 const ResponseMessage = require("../utils/responseMessage"),
   userModel = require("../models/user.model");
 
-// get the logo image
-// const logoBuffer = fs.readFileSync(`${__dirname}/../assets/sequioa-logo.png`);
 // Convert the image buffer to a base64 string
 // const logoBase64 = logoBuffer.toString("base64");
 // const logoSrc = `,`;
 // console.log(logoSrc);
 // Read the logo image as a binary buffer
-const logoPath = `${__dirname}/../assets/sequioa-logo.png`;
-const logoBuffer = fs.readFileSync(logoPath);
-
-// Convert the image buffer to a base64 string
-const logoBase64 = logoBuffer.toString("base64");
-const logoSrc = `data:image/png;base64,${logoBase64}`;
+// const logoPath = `${__dirname}/../assets/sequioa-logo.png`;
+// const logoBuffer = fs.readFileSync(logoPath);
 
 const auth = {};
 
@@ -42,7 +35,7 @@ auth.signUp = async (req, res) => {
   if (!errors.isEmpty()) {
     return res
       .status(400)
-      .json(new ResponseMessage("error", 400, errors.array()));
+      .json(new ResponseMessage("error", 400, errors.array()[0].msg));
   }
 
   try {
@@ -94,15 +87,15 @@ auth.signUp = async (req, res) => {
       subject: "Activate Your Account",
       html: `
       <body style="padding:0.8rem">
-      <div style="display:inline-block">
-       <img src="data:image/png;base64,${logoBase64}" alt="logo"/>
+      <div style="display:block">
+       <img src="https://sequioa-api.vercel.app/api/v1/logo" alt="logo"/>
       </div>
       <h3 style="font-size:1rem;font-weight:800">Dear Sequioa Trader,</h3>
       <p style="font-size:1.2rem;line-height:1.5">
        Your account <a href="#" style="color:#00f">${email}</a> has been successfully created at<br>
       <a style="text-decoration:none;font-size:1.4rem;font-weight:600;color:#ef5533" href="https://sequioa-one.vercel.app/">SEQUIOA</a>
       <br>
-       To activate, Please click on the link below
+       To activate your account, Please click on the link below
       </p>
       <button 
       style="border:none;box-shadow:none;font-size:1.1rem;display:block;width:70%;border-radius:8px;background:#ef5533;cursor:pointer;padding:0;margin-bottom:1rem">
@@ -181,12 +174,15 @@ auth.activateUser = async (req, res) => {
       subject: "Customer Account Confirmation",
       html: `
       <body style="padding:0.8rem">
+      <div style="display:block">
+       <img src="https://sequioa-api.vercel.app/api/v1/logo" alt="logo"/>
+      </div>
       <h1 style="font-family:sans-serif;font-weight:600;font-size:1.8rem">Welcome to Sequioa!</h1>
-      <h5>Dear valued Trader</h6>
+      <h3 style="font-size:1rem;font-weight:800">Dear valued Trader,</h3>
       <p style="font-size:1.2rem;line-height:1.5">
        You customer account has been activated <br>
       </p>
-      <small>Kindly visit <a style="text-decoration:none;color:#fff;border:1px solid red;display:block;padding:0.75rem;border-radius:inherit;" href="https://sequioa-one.vercel.app/login">sequioa</a></small>
+      <p>Kindly visit <a style="text-decoration:none;color:#3a8d97;border:1px solid red;display:block;padding:0.75rem;border-radius:inherit;" href="https://sequioa-one.vercel.app/login">sequioa</a> to continue trading</p>
       </body>
       `,
     };

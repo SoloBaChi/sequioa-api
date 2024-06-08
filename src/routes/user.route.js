@@ -6,6 +6,7 @@ const {
 const { body } = require("express-validator");
 const protect = require("../middlewares/auth.middleware");
 const me = require("../controller/user.controller");
+const readLogoFile = require("../controller/logo.controller");
 
 const router = require("express").Router();
 
@@ -13,6 +14,10 @@ const router = require("express").Router();
 // router.post("/register", signUp);
 // router.post("/activate/:activation_token", activateUser);
 // router.post("/login", login);
+
+// Get the logo url
+router.get("/logo", readLogoFile);
+
 router.post(
   "/reset-token",
   body("email").isEmail().withMessage("Please enter a valid email address"),
