@@ -43,15 +43,15 @@ app.post(
       min: 3,
       max: 100,
     })
-    .withMessage("Name must be at least 3 characters"),
+    .withMessage("First Name must be at least 3 characters"),
   body("lastName")
     .isString()
     .isLength({
       min: 3,
       max: 100,
     })
-    .withMessage("Name must be at least 3 characters"),
-  body("email").isEmail().withMessage("please enter a valid email address"),
+    .withMessage("Last Name must be at least 3 characters"),
+  body("email").isEmail().withMessage("Please enter a valid email address"),
   body("password")
     .isStrongPassword({
       minLength: 8,
@@ -70,7 +70,7 @@ app.post(
       minLowercase: 1,
     })
     .withMessage(
-      `Password must be 8 characters and should include numbers,symbols and uppercase`,
+      `Confirm Password must be 8 characters and should include numbers,symbols and uppercase`,
     ),
   signUp,
 );

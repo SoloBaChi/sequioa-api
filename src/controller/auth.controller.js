@@ -35,7 +35,7 @@ auth.signUp = async (req, res) => {
   if (!errors.isEmpty()) {
     return res
       .status(400)
-      .json(new ResponseMessage("error", 400, errors.array()));
+      .json(new ResponseMessage("error", 400, errors.array()[0].msg));
   }
 
   try {
