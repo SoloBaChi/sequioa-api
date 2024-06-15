@@ -1,11 +1,11 @@
 const {
-  login,
   sendResetPassowrdToken,
   verifyResetPasswordToken,
+  updateUser,
+  getUser,
 } = require("../controller/auth.controller");
 const { body } = require("express-validator");
 const protect = require("../middlewares/auth.middleware");
-const me = require("../controller/user.controller");
 const readLogoFile = require("../controller/logo.controller");
 
 const router = require("express").Router();
@@ -15,8 +15,10 @@ const router = require("express").Router();
 // router.post("/activate/:activation_token", activateUser);
 // router.post("/login", login);
 
-// Get the logo url
+///////////////////////
+//**GET METHODS */
 router.get("/logo", readLogoFile);
+router.get("/user", protect, getUser);
 
 router.post(
   "/reset-token",
@@ -25,7 +27,11 @@ router.post(
 );
 
 ///////////////////////
-//Verify reset Password Token
+//**POST METHODS */
+
+///////////////////////
+//**PUT METHODS */
+router.put("/updateuser", protect, updateUser);
 router.put(
   "/verify-token",
   body("password")

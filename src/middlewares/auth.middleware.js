@@ -37,11 +37,11 @@ const protect = async (req, res, next) => {
   if (!decodedToken) {
     return res
       .status(401)
-      .json(new ResponseMessage("error", 401, "Invalid Token!"));
+      .json(new ResponseMessage("error", 401, "Something Went wrong!"));
   }
 
   //Extract the user from the decoded token
-  const userId = decodedToken.userId;
+  const { id: userId } = decodedToken;
   if (!userId) {
     return res
       .status(401)
