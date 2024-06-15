@@ -24,6 +24,14 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
+    profile: {
+      type: String,
+      default: "",
+    },
+    accountBalance: {
+      type: Number,
+      default: 0,
+    },
     activationToken: {
       type: String,
     },
@@ -33,7 +41,7 @@ const userSchema = new Schema(
     isActive: {
       type: Boolean,
       default: false,
-    }
+    },
   },
   {
     timestamps: true,

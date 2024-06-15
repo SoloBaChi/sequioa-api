@@ -23,7 +23,10 @@ const ResponseMessage = require("../utils/responseMessage"),
 const auth = {};
 
 const newToken = (user) =>
-  jwt.sign({ id: user._id }, process.env.AUTHENTICATION_SECRET_KEY);
+  jwt.sign(
+    { id: user._id, email: user.email },
+    process.env.AUTHENTICATION_SECRET_KEY,
+  );
 
 // Verify Jwt Token
 const verifyToken = (token) =>
@@ -120,7 +123,7 @@ auth.signUp = async (req, res) => {
           ),
         );
     });
-    console.log(newUser);
+    // console.log(newUser);
   } catch (err) {
     console.log(err);
     return res
@@ -129,7 +132,8 @@ auth.signUp = async (req, res) => {
   }
 };
 
-// Activate user account
+//**  Activate user account
+//GET http://localhost:8001/activate?email=""&token=""
 auth.activateUser = async (req, res) => {
   // const {
   //   pathname,
@@ -151,10 +155,6 @@ auth.activateUser = async (req, res) => {
     user.isActive = true;
     user.activationToken = null; //reset the activation token to null
     await user.save();
-    console.log("saved");
-
-    // get the redirect link
-    // const redirectLink = `https://www.damsgallery.com/activated-account`;
 
     // Generate Access token
     const accessToken = await newToken(user);
@@ -216,6 +216,7 @@ auth.activateUser = async (req, res) => {
 };
 
 // Login a user
+// POST : localhost:8000/login
 auth.login = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -234,7 +235,6 @@ auth.login = async (req, res) => {
     }
 
     // check if the user has been activated
-    console.log(user.isActive);
     if (!user.isActive) {
       return res
         .status(400)
@@ -269,6 +269,55 @@ auth.login = async (req, res) => {
   }
 };
 
+// ***GET: http://localhost:8001/api/v1/user
+auth.getUser = async (req, res) => {
+  try {
+    const { firstName, lastName, email, _id: id } = req.user;
+    return res.status(200).json(
+      new ResponseMessage(
+        "success",
+        200,
+        "Fetched Your Profile Successfully...!",
+        {
+          id,
+          firstName,
+          lastName,
+          email,
+        },
+      ),
+    );
+  } catch (err) {
+    return res
+      .status(404)
+      .json(new ResponseMessage("error", 404, "Internal Sever Error!"));
+  }
+};
+
+// POST : localhost:8000/api/v1/upadteuser
+auth.updateUser = async (req, res) => {
+  const { email } = req.user;
+  try {
+    const user = await userModel.findOneAndUpdate({ email }, req.body, {
+      new: true,
+    });
+    if (!user)
+      return res
+        .status(404)
+        .json(new ResponseMessage("error", 404, "user not found..!"));
+
+    // return updated user
+    return res.status(200).json(
+      new ResponseMessage("success", 200, "User updated Successfully...!", {
+        user,
+      }),
+    );
+  } catch (err) {
+    return res
+      .status(404)
+      .json(new ResponseMessage("error", 404, "Internal Sever Error!"));
+  }
+};
+
 // ////////////
 ///FORGOT PASSWORD
 auth.sendResetPassowrdToken = async (req, res) => {
@@ -299,7 +348,7 @@ auth.sendResetPassowrdToken = async (req, res) => {
 
     // Generate random Digit and update the user authToken
     const authCode = generateRandomDigit();
-    console.log(authCode);
+    // console.log(authCode);
     const updatedUser = await userModel.findByIdAndUpdate(
       {
         _id: user._id,

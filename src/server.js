@@ -2,6 +2,7 @@
 const express = require("express");
 const cors = require("cors");
 const { json, urlencoded } = require("body-parser");
+const morgan = require("morgan");
 
 // Third Party Modules
 const { body } = require("express-validator");
@@ -18,10 +19,12 @@ require("dotenv").config();
 // Create the APP
 const app = express();
 
-// Use the APP
+//** Core Midddlewares
 app.use(cors({ origin: "*" }));
 app.use(urlencoded({ extended: true }));
 app.use(json());
+app.use(morgan("tiny"));
+app.disable("x-powered-by"); //less hacker know about our stack
 
 // APP ROUTES
 /*** Default Route */
@@ -114,7 +117,7 @@ const start = async () => {
   // connect to the database
   await connectToDb();
   app.listen(port, () => {
-    console.log(`server runs at port ${port} `);
+    console.log(`server runs at localhost:${port} `);
   });
 };
 
