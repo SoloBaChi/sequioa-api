@@ -73,7 +73,7 @@ auth.signUp = async (req, res) => {
     });
 
     // Create an activation link
-    const activationLink = `https://sequioa-one.vercel.app/activate?email=${email}&token=${activationToken}`;
+    const activationLink = `https://sequoiaxchange.com/activate?email=${email}&token=${activationToken}`;
 
     // Send the Activation link to the email
     const transporter = nodemailer.createTransport({
@@ -182,7 +182,7 @@ auth.activateUser = async (req, res) => {
       <p style="font-size:1.2rem;line-height:1.5">
        You customer account has been activated <br>
       </p>
-      <p>Kindly visit <a style="text-decoration:none;color:#3a8d97;padding:0.75rem;border-radius:inherit;font-size:1rem" href="https://sequioa-one.vercel.app/login">sequioa</a> to continue trading</p>
+      <p>Kindly visit <a style="text-decoration:none;color:#3a8d97;padding:0.75rem;border-radius:inherit;font-size:1rem" href="https://sequoiaxchange.com/login">sequioa</a> to continue trading</p>
       </body>
       `,
     };
