@@ -272,7 +272,7 @@ auth.login = async (req, res) => {
 // ***GET: http://localhost:8001/api/v1/user
 auth.getUser = async (req, res) => {
   try {
-    const { firstName, lastName, email, _id: id } = req.user;
+    const { firstName, lastName, email, _id: id, profile } = req.user;
     return res.status(200).json(
       new ResponseMessage(
         "success",
@@ -283,6 +283,7 @@ auth.getUser = async (req, res) => {
           firstName,
           lastName,
           email,
+          profile,
         },
       ),
     );
@@ -317,6 +318,8 @@ auth.updateUser = async (req, res) => {
       .json(new ResponseMessage("error", 404, "Internal Sever Error!"));
   }
 };
+
+// POST : localhost:8000/api/v1/upadte
 
 // ////////////
 ///FORGOT PASSWORD
